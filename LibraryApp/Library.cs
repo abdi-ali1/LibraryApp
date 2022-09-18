@@ -11,16 +11,12 @@ namespace LibraryApp
     {
         private string name;
         
-        private Dictionary<int, Book> libraryBooks = new Dictionary<int, Book>();
+
+        public List<Book> libraryBooks = new List<Book>();
 
         public Library(string name)
         {
             this.name = name;
-
-            foreach (KeyValuePair<int, Book> book in GetAllBooks())
-            {
-                Console.WriteLine( book.Value.GetInfo());
-            }
         }
 
         /// <summary>
@@ -29,8 +25,7 @@ namespace LibraryApp
         /// <param name="book"></param>
         public void AddBook(Book book)
         {
-           libraryBooks.Add(book.Id, book);
-
+           libraryBooks.Add( book);
 
         }
 
@@ -40,15 +35,17 @@ namespace LibraryApp
         /// <param name="id"></param>
         public bool RemoveBook(int id) 
         {
-            if (libraryBooks.ContainsKey(id))
+            bool status = false;
+            for (int i = 0; i < libraryBooks.Count; i++)
             {
-                libraryBooks.Remove(id);
-                return true;
+                if (libraryBooks[i].Id == id)
+                {
+                    libraryBooks.RemoveAt(i);
+                    status = true;
+                }
             }
-            else
-            {
-                return false;
-            }
+
+            return status;
         }
         /// <summary>
         /// returns a book object that has the same id in the libraryBook Dictionary
@@ -57,21 +54,24 @@ namespace LibraryApp
         /// <returns></returns>
         public Book GetBookById(int id)
         {
-            if (libraryBooks.ContainsKey(id))
+            Book book = null;
+
+            foreach (Book b in libraryBooks)
             {
-                return libraryBooks[id];
+                if (b.Id == id)
+                {
+                    book = b;
+                }
             }
-            else
-            {
-                return null;
-            }
+
+            return book;
         }
 
         /// <summary>
         /// returns the field LibraryBook
         /// </summary>
         /// <returns></returns>
-        public Dictionary<int, Book> GetAllBooks()
+        public List<Book> GetAllBooks()
         {
             return libraryBooks;
         }
@@ -83,17 +83,17 @@ namespace LibraryApp
         /// returns the all availlableBooks
         /// </summary>
         /// <returns></returns>
-        public Dictionary<int, Book> GetAvailableBooks()
+        public List<Book> GetAvailableBooks()
         {
-            Dictionary<int, Book> availableBooks = new Dictionary<int, Book>();
-            foreach(KeyValuePair<int, Book> book in libraryBooks)
+            List<Book> availableBooks = new List<Book>();
+            foreach(Book book in libraryBooks)
             {
-                if (!book.Value.IsBorrowd)
+                if (!book.IsBorrowd)
                 {
-                    availableBooks.Add(book.Key, book.Value);
+                    availableBooks.Add(book);
                 }
             }
-
+                
             return availableBooks;
         }
 
@@ -102,14 +102,14 @@ namespace LibraryApp
         /// returns all the borrowed Books 
         /// </summary>
         /// <returns></returns>
-        public Dictionary<int, Book> GetBorrowedBooks()
+        public List<Book> GetBorrowedBooks()
         {
-            Dictionary<int, Book> borrowedBooks = new Dictionary<int, Book>();
-            foreach (KeyValuePair<int, Book> book in libraryBooks)
+          List<Book> borrowedBooks = new List<Book>();
+            foreach (Book book in libraryBooks)
             {
-                if (book.Value.IsBorrowd)
+                if (book.IsBorrowd)
                 {
-                    borrowedBooks.Add(book.Key, book.Value);
+                    borrowedBooks.Add(book);
                 }
             }
 

@@ -6,15 +6,16 @@ using System.Threading.Tasks;
 
 namespace LibraryApp
 {
+  [Serializable]
   public class Book
     {
 
-        private static int m_Counter = 0;
+        private static int autoIncrementCounter = 0;
         private int id = 99;
          
         private string title;
         private string author;
-        private string borrowedInfo;
+        private string borrowedInfo = "No info";
         private bool isBorrowd = false;
 
         private BookType bookType;
@@ -29,7 +30,6 @@ namespace LibraryApp
         public bool IsBorrowd { get { return isBorrowd; } set { isBorrowd = value; } }
 
 
-
         public Book(string title, string author, BookType bookType)
         {
             this.title = title;
@@ -40,15 +40,6 @@ namespace LibraryApp
              AutoIncrementId();
         }
 
-        public Book(string title, string author, BookType bookType, int id)
-        {
-            this.title = title;
-            this.author = author;
-            this.bookType = bookType;
-            this.id = id;
-
-            AutoIncrementId();
-        }
 
         /// <summary>
         /// returns a string with some information about this object
@@ -85,11 +76,7 @@ namespace LibraryApp
         private void AutoIncrementId()
         {
        
-           id += System.Threading.Interlocked.Increment(ref m_Counter);
+           id += System.Threading.Interlocked.Increment(ref autoIncrementCounter);
         }
-
-
-
-      
     }
 }

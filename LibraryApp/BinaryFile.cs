@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -9,8 +10,6 @@ namespace LibraryApp
 {
     public class BinaryFile
     {
-        private BinaryWriter binaryWriter;
-        private BinaryReader binaryReader;
         private Library library;
 
         public BinaryFile(Library library)
@@ -18,30 +17,41 @@ namespace LibraryApp
             this.library = library;
         }
 
-
-
-
         /// <summary>
         /// Creates a BinaryFile
         /// </summary>
-        public void CreateBinaryFile()
+        public void CreateBinaryFile(string path)
         {
-            var binaryFormatter = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
-            var fi = new System.IO.FileInfo(@"../../abdi.bin");
+            BinaryFormatter binaryFormatter = new BinaryFormatter();
+            FileInfo fi = new FileInfo(@path);
 
-            List<string> books = new List<string>();
+
             using (var binaryFile = fi.Create())
             {
-                foreach (KeyValuePair<int, Book> book in library.GetAllBooks())
-                {
-
-                  
-                    binaryFormatter.Serialize(binaryFile,  book.Value.Title);
-               
-                    binaryFile.Flush();
-                }
+                binaryFormatter.Serialize(binaryFile, library.GetAllBooks());
+                binaryFile.Flush();
             }
+
+
         }
+
+
+        public List<Book> ReadBinaryFile(string path)
+        {
+            //Format the object as Binary  
+            BinaryFormatter formatter = new BinaryFormatter();
+
+            //Reading the file from the server  
+            FileStream fs = File.Open(path, FileMode.Open);
+            List<Book> savedBooks =  (List<Book>)formatter.Deserialize(fs);
+            fs.Flush();
+            fs.Close();
+            fs.Dispose();
+
+
+            return savedBooks;
+        }
+
 
     }
 }

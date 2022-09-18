@@ -1,13 +1,17 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+using OpenFileDialog = System.Windows.Forms.OpenFileDialog;
+using SaveFileDialog = System.Windows.Forms.SaveFileDialog;
 
 namespace LibraryApp
 {
@@ -16,15 +20,12 @@ namespace LibraryApp
         private static Library library;
         private FormClosingEventHandler frmMain_FormClosing;
 
+
+
         public Form1()
         {
             InitializeComponent();
-      
             library = new Library("The Amazing Fontys Library");
-            DummeyBookData();
-            AddDictionaryItemsToListBox(library.GetAllBooks());
-   
-
         }
 
         private void btnAdd_Click(object sender, EventArgs e)
@@ -110,10 +111,7 @@ namespace LibraryApp
             }
         }
 
-        private void lbLibrary_SelectedIndexChanged(object sender, EventArgs e)
-        {
-
-        }
+       
 
         /// <summary>
         /// returns booktype that is connected to the radiobutton
@@ -165,12 +163,12 @@ namespace LibraryApp
         /// adds some items to the form l
         /// </summary>
         /// <param name="keyValues"></param>
-        private void AddDictionaryItemsToListBox(Dictionary<int, Book> keyValues)
+        private void AddDictionaryItemsToListBox(List<Book> books)
         {
             lbLibrary.Items.Clear();
-            foreach (KeyValuePair<int, Book> book in keyValues)
+            foreach (Book book in books)
             {
-                lbLibrary.Items.Add(book.Value.GetInfo());
+                lbLibrary.Items.Add(book.GetInfo());
             }
         }
 
@@ -192,33 +190,66 @@ namespace LibraryApp
                                 MessageBoxButtons.YesNo,
                                 MessageBoxIcon.Information) == DialogResult.Yes)
             {
-                BinaryFile binaryFile = new BinaryFile(library);
-                binaryFile.CreateBinaryFile();
                 SaveFile();
             }
         }
+        
+        
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            bool fileLoaded = false;
+            if (System.Windows.Forms.MessageBox.Show(
+                "Do You want to load your prograss",
+                "Library Fontys",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Information) == DialogResult.Yes )
+            {
+                LoadFile();
+                AddDictionaryItemsToListBox(library.GetAllBooks());
+            }
+            else
+            {
+                DummeyBookData();
+                AddDictionaryItemsToListBox(library.GetAllBooks());
+            }
 
+            
+            
+
+        }
 
         private void SaveFile()
         {
             SaveFileDialog saveFileDialog1 = new SaveFileDialog();
-            saveFileDialog1.Filter = "BIN files| (*.bin)";
-            saveFileDialog1.FileName = "Library.bin";
             saveFileDialog1.Title = "save your progress";
+            saveFileDialog1.FileName = "Library.bin";
             saveFileDialog1.ShowDialog();
+         
 
             if (saveFileDialog1.FileName != "")
             {
-       
-                System.IO.FileStream fs =
-                    (System.IO.FileStream)saveFileDialog1.OpenFile();
-               
-
-
-                fs.Close();
+                BinaryFile binaryFile = new BinaryFile(library);
+                binaryFile.CreateBinaryFile(Path.GetFullPath(saveFileDialog1.FileName).ToString());
             }
         }
 
+        /// <summary>
+        /// Loads in a binary file
+        /// </summary>
+        private void LoadFile()
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+
+            openFileDialog.Title = "Load in your file";
+            openFileDialog.ShowDialog();
+
+            BinaryFile binaryFile = new BinaryFile(library);
+            List<Book> valuePairs = binaryFile.ReadBinaryFile(Path.GetFullPath(openFileDialog.FileName).ToString());
+            foreach (Book book in valuePairs)
+            {
+                library.AddBook(book);
+            }
+        }
 
 
         #region not using 
@@ -231,10 +262,12 @@ namespace LibraryApp
         {
 
         }
-        private void Form1_Load(object sender, EventArgs e)
+
+        private void lbLibrary_SelectedIndexChanged(object sender, EventArgs e)
         {
 
         }
+
         #endregion
 
 
