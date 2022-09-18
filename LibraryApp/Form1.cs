@@ -111,7 +111,35 @@ namespace LibraryApp
             }
         }
 
-       
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (System.Windows.Forms.MessageBox.Show("Do you want to save your prograss ?",
+                               "Library Fontys",
+                                MessageBoxButtons.YesNo,
+                                MessageBoxIcon.Information) == DialogResult.Yes)
+            {
+                SaveFile();
+            }
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            bool fileLoaded = false;
+            if (System.Windows.Forms.MessageBox.Show(
+                "Do You want to load your prograss",
+                "Library Fontys",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Information) == DialogResult.Yes)
+            {
+                LoadFile();
+                AddDictionaryItemsToListBox(library.GetAllBooks());
+            }
+            else
+            {
+                DummeyBookData();
+                AddDictionaryItemsToListBox(library.GetAllBooks());
+            }
+        }
 
         /// <summary>
         /// returns booktype that is connected to the radiobutton
@@ -180,42 +208,6 @@ namespace LibraryApp
         {
             BorrowForm borrowForm = new BorrowForm(book);
             borrowForm.Show();
-        }
-
-
-        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            if (System.Windows.Forms.MessageBox.Show("Do you want to save your prograss ?",
-                               "Library Fontys",
-                                MessageBoxButtons.YesNo,
-                                MessageBoxIcon.Information) == DialogResult.Yes)
-            {
-                SaveFile();
-            }
-        }
-        
-        
-        private void Form1_Load(object sender, EventArgs e)
-        {
-            bool fileLoaded = false;
-            if (System.Windows.Forms.MessageBox.Show(
-                "Do You want to load your prograss",
-                "Library Fontys",
-                MessageBoxButtons.YesNo,
-                MessageBoxIcon.Information) == DialogResult.Yes )
-            {
-                LoadFile();
-                AddDictionaryItemsToListBox(library.GetAllBooks());
-            }
-            else
-            {
-                DummeyBookData();
-                AddDictionaryItemsToListBox(library.GetAllBooks());
-            }
-
-            
-            
-
         }
 
         private void SaveFile()
