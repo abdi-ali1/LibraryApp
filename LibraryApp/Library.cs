@@ -11,8 +11,8 @@ namespace LibraryApp
     {
         private string name;
         
-
-        public List<Book> libraryBooks = new List<Book>();
+        private List<Book> libraryBooks = new List<Book>();
+ 
 
         public Library(string name)
         {
@@ -30,7 +30,7 @@ namespace LibraryApp
         }
 
         /// <summary>
-        /// removes book from Dictionary 
+        /// removes book from list of books 
         /// </summary>
         /// <param name="id"></param>
         public bool RemoveBook(int id) 
@@ -47,8 +47,10 @@ namespace LibraryApp
 
             return status;
         }
+        
+        
         /// <summary>
-        /// returns a book object that has the same id in the libraryBook Dictionary
+        /// returns a book object that has the same id in the libraryBook list
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
@@ -67,6 +69,7 @@ namespace LibraryApp
             return book;
         }
 
+
         /// <summary>
         /// returns the field LibraryBook
         /// </summary>
@@ -75,8 +78,6 @@ namespace LibraryApp
         {
             return libraryBooks;
         }
-
-
 
 
         /// <summary>

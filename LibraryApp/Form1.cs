@@ -1,15 +1,7 @@
-﻿using Microsoft.Win32;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using OpenFileDialog = System.Windows.Forms.OpenFileDialog;
 using SaveFileDialog = System.Windows.Forms.SaveFileDialog;
 
@@ -18,25 +10,24 @@ namespace LibraryApp
     public partial class Form1 : Form
     {
         private static Library library;
-        private FormClosingEventHandler frmMain_FormClosing;
-
-
-
+       
         public Form1()
         {
             InitializeComponent();
             library = new Library("The Amazing Fontys Library");
+           
         }
 
         private void btnAdd_Click(object sender, EventArgs e)
         {
-
+            // checks if one of the two fields is empty or null
             if (String.IsNullOrEmpty(tbTitle.Text) || String.IsNullOrEmpty(tbAuthor.Text))
             {
-                MessageBox("please fill the fields before adding a new book");
+                MessageBox.Show("please fill in the fields before adding a new book");
             }
             else
             {
+                // checks if if value can be parsed
                 if (int.TryParse(tbAvailability.Text, out int availability))
                 {
                     for (int i = 0; i < availability; i++)
@@ -44,76 +35,84 @@ namespace LibraryApp
                         Book newBook = new Book(tbTitle.Text, tbAuthor.Text, GetRbBookType());
                         library.AddBook(newBook);
 
-                        AddDictionaryItemsToListBox(library.GetAllBooks());
+                        AddListItemsToListBox(library.GetAllBooks());
                     }
                 }
                 else
                 {
-                    MessageBox("Please enther a numbrick value");
+                    MessageBox.Show("Please enther a numbrick value");
                 }
             }
         }
 
         private void btnShowAll_Click(object sender, EventArgs e)
         {
-            AddDictionaryItemsToListBox(library.GetAllBooks());
+            //adds item to listbox
+            AddListItemsToListBox(library.GetAllBooks());
         }
 
         private void btnShowBooksThatAre_Click(object sender, EventArgs e)
         {
+           //checks which box is checked
             if (rbtnBorrowed.Checked)
             {
-                AddDictionaryItemsToListBox(library.GetBorrowedBooks());
+                AddListItemsToListBox(library.GetBorrowedBooks());
             }
             else if (rbtnAvailable.Checked)
             {
-                AddDictionaryItemsToListBox(library.GetAvailableBooks());
+                AddListItemsToListBox(library.GetAvailableBooks());
             }
         }
 
         private void btnRemove_Click(object sender, EventArgs e)
         {
+            //checks if item exist and deletes it
             if (!library.RemoveBook(int.Parse(tbId.Text)))
             {
-                MessageBox("Sorry, no book with the specified id");
+                MessageBox.Show("Sorry, no book with the specified id");
             }
             else
             {
-                AddDictionaryItemsToListBox(library.GetAllBooks());
+                AddListItemsToListBox(library.GetAllBooks());
             }
         }
 
         private void btnReturn_Click(object sender, EventArgs e)
         {
+             // check if item exist and returns a book
             if (library.GetBookById(int.Parse(tbId.Text)) == null)
             {
-                MessageBox("Sorry, no book with the specified id");
+                MessageBox.Show("Sorry, no book with the specified id");
             }
             else
             {
                 library.GetBookById(int.Parse(tbId.Text)).IsBorrowd = false;
+                AddListItemsToListBox(library.GetAllBooks());
+
             }
         }
 
         private void btnBorrow_Click(object sender, EventArgs e)
         {
+            //checks if item exist or it all ready is borrowd
             if (library.GetBookById(int.Parse(tbId.Text)) == null)
             {
-                MessageBox("Sorry, no book with the specified id");
+                MessageBox.Show("Sorry, no book with the specified id");
             }
             else if (library.GetBookById(int.Parse(tbId.Text)).IsBorrowd == true)
             {
-                MessageBox("Sorry, book is not available");
+                MessageBox.Show("Sorry, book is not available");
             }
             else
             {
-                GetBorrowForm(library.GetBookById(int.Parse(tbId.Text)));
+                InitBorrowForm(library.GetBookById(int.Parse(tbId.Text)));
             }
         }
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (System.Windows.Forms.MessageBox.Show("Do you want to save your prograss ?",
+            //asks the user if he wants to save his proggess
+            if (MessageBox.Show("Do you want to save your progress ?",
                                "Library Fontys",
                                 MessageBoxButtons.YesNo,
                                 MessageBoxIcon.Information) == DialogResult.Yes)
@@ -124,25 +123,25 @@ namespace LibraryApp
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            bool fileLoaded = false;
-            if (System.Windows.Forms.MessageBox.Show(
-                "Do You want to load your prograss",
+            //asks the user ig the wants to load his progress
+            if (MessageBox.Show(
+                "Do You want to load your progress",
                 "Library Fontys",
                 MessageBoxButtons.YesNo,
                 MessageBoxIcon.Information) == DialogResult.Yes)
             {
                 LoadFile();
-                AddDictionaryItemsToListBox(library.GetAllBooks());
+                AddListItemsToListBox(library.GetAllBooks());
             }
             else
             {
                 DummeyBookData();
-                AddDictionaryItemsToListBox(library.GetAllBooks());
+                AddListItemsToListBox(library.GetAllBooks());
             }
         }
 
         /// <summary>
-        /// returns booktype that is connected to the radiobutton
+        /// returns booktype that is connected to the radiobutton that is checked
         /// </summary>
         /// <returns></returns>
         private BookType GetRbBookType()
@@ -165,15 +164,6 @@ namespace LibraryApp
         }
 
         /// <summary>
-        /// shows a MessageBox with
-        /// </summary>
-        /// <param name="message"> the message that is shown</param>
-        private void MessageBox(string message)
-        {
-            System.Windows.Forms.MessageBox.Show(message);
-        }
-
-        /// <summary>
         /// some dummy data that is added to the library
         /// </summary>
         private void DummeyBookData()
@@ -188,10 +178,10 @@ namespace LibraryApp
         }
         
         /// <summary>
-        /// adds some items to the form l
+        /// adds some books to listBox
         /// </summary>
         /// <param name="keyValues"></param>
-        private void AddDictionaryItemsToListBox(List<Book> books)
+        private void AddListItemsToListBox(List<Book> books)
         {
             lbLibrary.Items.Clear();
             foreach (Book book in books)
@@ -204,25 +194,25 @@ namespace LibraryApp
         /// initalaze the BorrowForm and parse
         /// </summary>
         /// <param name="book"></param>
-        private void GetBorrowForm(Book book)
+        private void InitBorrowForm(Book book)
         {
             BorrowForm borrowForm = new BorrowForm(book);
             borrowForm.Show();
         }
 
+        /// <summary>
+        /// ask the user of he can save his progress in the file
+        /// </summary>
         private void SaveFile()
         {
             SaveFileDialog saveFileDialog1 = new SaveFileDialog();
             saveFileDialog1.Title = "save your progress";
             saveFileDialog1.FileName = "Library.bin";
             saveFileDialog1.ShowDialog();
-         
 
-            if (saveFileDialog1.FileName != "")
-            {
                 BinaryFile binaryFile = new BinaryFile(library);
                 binaryFile.CreateBinaryFile(Path.GetFullPath(saveFileDialog1.FileName).ToString());
-            }
+            
         }
 
         /// <summary>
@@ -237,6 +227,7 @@ namespace LibraryApp
 
             BinaryFile binaryFile = new BinaryFile(library);
             List<Book> valuePairs = binaryFile.ReadBinaryFile(Path.GetFullPath(openFileDialog.FileName).ToString());
+
             foreach (Book book in valuePairs)
             {
                 library.AddBook(book);

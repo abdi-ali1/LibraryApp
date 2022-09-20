@@ -9,27 +9,30 @@ namespace LibraryApp
   [Serializable]
   public class Book
     {
-
+        // private fields
         private static int autoIncrementCounter = 0;
+        
         private int id = 99;
-         
+    
         private string title;
         private string author;
         private string borrowedInfo = "No info";
+    
         private bool isBorrowd = false;
 
         private BookType bookType;
 
-
-
+        // properties with getters and setters
         public int Id { get { return id; } }
-        public string Title { get { return title; } }
-        public string Author { get { return author; } }
-        public string BorrowedInfo { get { return borrowedInfo; } }
-        public BookType BookType { get { return bookType; } }
         public bool IsBorrowd { get { return isBorrowd; } set { isBorrowd = value; } }
 
 
+        /// <summary>
+        /// Constructer sets the private fields and excutes the autoIncrementId method
+        /// </summary>
+        /// <param name="title">value for title field</param>
+        /// <param name="author">value for title</param>
+        /// <param name="bookType"></param>
         public Book(string title, string author, BookType bookType)
         {
             this.title = title;
@@ -40,11 +43,10 @@ namespace LibraryApp
              AutoIncrementId();
         }
 
-
         /// <summary>
-        /// returns a string with some information about this object
+        /// returns a string with information about this book
         /// </summary>
-        /// <returns>string with information about this object</returns>
+        /// <returns></returns>
         public string GetInfo()
         {
             string returnText;
@@ -65,18 +67,16 @@ namespace LibraryApp
         public void SetBorrowdInformation(string info)
         {
             borrowedInfo = info;
-            isBorrowd = true;
         }
 
-       /// <summary>
+        /// <summary>
        /// increments the given value
        /// </summary>
        /// <param name="value"></param>
        /// <returns></returns>
         private void AutoIncrementId()
         {
-       
-           id += System.Threading.Interlocked.Increment(ref autoIncrementCounter);
+          id += System.Threading.Interlocked.Increment(ref autoIncrementCounter);
         }
     }
 }

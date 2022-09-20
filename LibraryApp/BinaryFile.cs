@@ -18,7 +18,7 @@ namespace LibraryApp
         }
 
         /// <summary>
-        /// Creates a BinaryFile
+        /// saves the data of the list of books. on the created binary file
         /// </summary>
         public void CreateBinaryFile(string path)
         {
@@ -35,7 +35,11 @@ namespace LibraryApp
 
         }
 
-
+        /// <summary>
+        /// reads a binaryfile that is saved on the given path
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns> a List of books that was retrives from the binary file</returns>
         public List<Book> ReadBinaryFile(string path)
         {
             //Format the object as Binary  
